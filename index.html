@@ -8,21 +8,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Daylight-friendly bright palette */
-            --bg-color: #f1f5f9; /* Light, anti-glare slate/ivory */
-            --card-bg: #ffffff; /* Pure white for maximum contrast */
-            --text-main: #0f172a; /* Deep charcoal for readability */
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
             --text-muted: #475569;
             
-            /* Saturated Royal Accents for Light Backgrounds */
-            --gold: #d97706; /* Rich Amber Gold */
+            --gold: #d97706;
             --gold-shadow: rgba(217, 119, 6, 0.25);
-            --blue: #1d4ed8; /* Deep Royal Blue */
+            --blue: #1d4ed8;
             --blue-shadow: rgba(29, 78, 216, 0.25);
-            --maroon: #9f1239; /* Rich Maroon */
+            --maroon: #9f1239;
             --maroon-shadow: rgba(159, 18, 57, 0.25);
-            --red: #b91c1c; /* Crimson Red */
+            --red: #b91c1c;
             --red-shadow: rgba(185, 28, 28, 0.25);
+            --purple: #6d28d9;
+            --purple-shadow: rgba(109, 40, 217, 0.25);
         }
 
         * {
@@ -31,51 +31,38 @@
             padding: 0;
         }
 
-        /* body {
-            background-color: var(--bg-color);
-background-image: linear-gradient(120deg, #f6d365 0%, #ffffff 40%, #71e4e0 100%);
+        body {
+            background: linear-gradient(45deg, #ffffff, #cbf6f5, #71e4e0, #8fd3f4);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             color: var(--text-main);
             font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 60px 20px;
-        } */
-         body {
-    background: linear-gradient(45deg, #ffffff, #cbf6f5, #71e4e0, #8fd3f4);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-    color: var(--text-main);
-    font-family: 'Montserrat', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 60px 20px;
-}
+            padding: 50px 20px;
+        }
 
-/* Add this right below the body { ... } block to make it move! */
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-        /* Arcade Header */
         header {
             text-align: center;
-            margin-bottom: 70px;
+            margin-bottom: 50px;
         }
 
         h1 {
             font-family: 'Cinzel', serif;
-            font-size: 4.5rem;
+            font-size: 4rem;
             text-transform: uppercase;
             letter-spacing: 4px;
-            color: #0f172a; /* Solid dark color is best for sunlight */
+            color: #0f172a;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
@@ -87,113 +74,88 @@ background-image: linear-gradient(120deg, #f6d365 0%, #ffffff 40%, #71e4e0 100%)
             text-transform: uppercase;
         }
 
-        /* Card Grid Layout */
+        /* -------------------------------------
+           THE 3-2 PYRAMID LAYOUT 
+        -------------------------------------- */
         .arcade-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
-            max-width: 1000px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* This perfectly centers the bottom 2 cards */
+            gap: 35px; /* Space between cards */
+            max-width: 1200px; /* Limits width so exactly 3 fit on top, forcing 2 to the bottom */
             width: 100%;
         }
 
-        /* Floating Card Styling */
+        /* -------------------------------------
+           THE CARD STYLING (Wider & Shorter)
+        -------------------------------------- */
         .card {
+            width: 340px; /* Fixed width to make them rectangular */
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 40px 30px;
+            padding: 25px; /* Shorter padding */
             text-align: center;
             text-decoration: none;
             color: var(--text-main);
-            position: relative;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
             transition: all 0.4s ease;
+            position: relative;
             
-            /* Crisp, dark shadow for bright environments */
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
-            
-            /* The Floating Animation */
+            /* Floating Animation */
             animation: float 6s ease-in-out infinite;
         }
 
+        /* Stagger the floating animation so they move in a wave */
         .card:nth-child(1) { animation-delay: 0s; }
-        .card:nth-child(2) { animation-delay: 1.5s; }
-        .card:nth-child(3) { animation-delay: 3s; }
-        .card:nth-child(4) { animation-delay: 4.5s; }
+        .card:nth-child(2) { animation-delay: 1s; }
+        .card:nth-child(3) { animation-delay: 2s; }
+        .card:nth-child(4) { animation-delay: 3s; }
+        .card:nth-child(5) { animation-delay: 4s; }
 
-        /* Color Variations for Cards */
-        .card.theme-blue {
-            --accent: var(--blue);
-            --shadow-color: var(--blue-shadow);
-            border-top: 6px solid var(--accent);
-        }
-        
-        .card.theme-maroon {
-            --accent: var(--maroon);
-            --shadow-color: var(--maroon-shadow);
-            border-top: 6px solid var(--accent);
-        }
+        .card.theme-blue { --accent: var(--blue); --shadow-color: var(--blue-shadow); border-top: 6px solid var(--accent); }
+        .card.theme-maroon { --accent: var(--maroon); --shadow-color: var(--maroon-shadow); border-top: 6px solid var(--accent); }
+        .card.theme-gold { --accent: var(--gold); --shadow-color: var(--gold-shadow); border-top: 6px solid var(--accent); }
+        .card.theme-red { --accent: var(--red); --shadow-color: var(--red-shadow); border-top: 6px solid var(--accent); }
+        .card.theme-purple { --accent: var(--purple); --shadow-color: var(--purple-shadow); border-top: 6px solid var(--accent); }
 
-        .card.theme-gold {
-            --accent: var(--gold);
-            --shadow-color: var(--gold-shadow);
-            border-top: 6px solid var(--accent);
-        }
-
-        .card.theme-red {
-            --accent: var(--red);
-            --shadow-color: var(--red-shadow);
-            border-top: 6px solid var(--accent);
-        }
-
-        /* Float Keyframes optimized for daylight shadows */
         @keyframes float {
-            0% { 
-                transform: translateY(0px); 
-                box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); 
-            }
-            50% { 
-                transform: translateY(-12px); 
-                box-shadow: 0 25px 40px rgba(15, 23, 42, 0.15); 
-            }
-            100% { 
-                transform: translateY(0px); 
-                box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); 
-            }
+            0% { transform: translateY(0px); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
+            50% { transform: translateY(-10px); box-shadow: 0 25px 35px rgba(15, 23, 42, 0.15); }
+            100% { transform: translateY(0px); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
         }
 
-        /* Card Hover Effects */
         .card:hover {
-            transform: scale(1.03) translateY(-8px) !important;
-            box-shadow: 0 20px 45px var(--shadow-color);
+            transform: scale(1.04) translateY(-5px) !important;
+            box-shadow: 0 15px 35px var(--shadow-color) !important;
+            z-index: 2; /* Brings hovered card to front */
         }
 
-        /* Inside the Cards */
         .card h2 {
             font-family: 'Cinzel', serif;
-            font-size: 2.2rem;
-            margin-bottom: 15px;
+            font-size: 1.5rem; 
+            margin-bottom: 10px; 
             color: var(--accent);
             font-weight: 900;
         }
 
         .card p {
-            font-size: 1.05rem;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            line-height: 1.4;
             color: var(--text-muted);
-            margin-bottom: 30px;
-            font-weight: 600; /* Thicker weight for outdoor readability */
+            margin-bottom: 20px; 
+            font-weight: 600;
         }
 
-        /* Solid buttons for sunlight visibility */
         .btn-play {
             display: inline-block;
-            padding: 14px 32px;
+            padding: 12px 28px; 
             background: var(--accent);
             color: #ffffff;
             border-radius: 30px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px var(--shadow-color);
         }
@@ -205,10 +167,27 @@ background-image: linear-gradient(120deg, #f6d365 0%, #ffffff 40%, #71e4e0 100%)
             transform: translateY(-2px);
         }
 
-        /* Make it responsive for mobile/tablets */
+        /* -------------------------------------
+           MOBILE RESPONSIVENESS
+        -------------------------------------- */
+        @media (max-width: 1150px) {
+            /* On medium screens, show 2 cards per row instead of 3 */
+            .arcade-grid {
+                max-width: 800px; 
+            }
+        }
+
         @media (max-width: 768px) {
+            /* On small screens, stack them in 1 column */
             h1 { font-size: 2.8rem; }
-            .arcade-grid { grid-template-columns: 1fr; } 
+            .arcade-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 100%;
+                max-width: 400px;
+            }
         }
     </style>
 </head>
@@ -221,36 +200,36 @@ background-image: linear-gradient(120deg, #f6d365 0%, #ffffff 40%, #71e4e0 100%)
 
     <main class="arcade-grid">
         
-        <!-- Game 1: Language Guessing (Royal Blue) -->
+        <!-- Top Row (3 Cards) -->
         <a href="languages.html" class="card theme-blue">
             <h2>Linguistic Isolate</h2>
-            <p>Decipher the scripts and clues to uncover languages from around the globe. Can you map the world's tongues?</p>
+            <p>Decipher the scripts to uncover languages from around the globe.</p>
             <div class="btn-play">Enter Game</div>
         </a>
 
-        <!-- Game 2: Hollywood Thrillers (Gold/Yellow) -->
         <a href="hollywood.html" class="card theme-gold">
             <h2>Plot in 3 Pictures</h2>
-            <p>Test your cinematic knowledge. Guess the iconic Hollywood blockbuster using only three simple emojis.</p>
+            <p>Test your knowledge. Guess the iconic Hollywood movie using 3 emojis.</p>
             <div class="btn-play">Enter Game</div>
         </a>
 
-        <!-- Game 3: Emoji Etymology (Maroon) -->
         <a href="etymology.html" class="card theme-maroon">
             <h2>Emoji Etymology</h2>
-            <p>Discover the ancient, literal roots of modern vocabulary. A linguistic journey through the history of words.</p>
+            <p>Discover the ancient, literal roots of modern vocabulary.</p>
             <div class="btn-play">Enter Game</div>
         </a>
 
-        <!-- Game 4: Landmark Riddles (Red) -->
+        <!-- Bottom Row (2 Cards) -->
         <a href="landmarks.html" class="card theme-red">
             <h2>Global Landmarks</h2>
-            <p>Solve cryptic riddles to identify the most breathtaking architectural and natural wonders of the world.</p>
+            <p>Solve cryptic riddles to identify breathtaking wonders of the world.</p>
             <div class="btn-play">Enter Game</div>
         </a>
-        <a>
+
+        <a href="whoami.html" class="card theme-purple">
             <h2>Who Am I</h2>
-            <p>Unleash your intelligence with 3 clues</p>
+            <p>Unleash your intelligence with 3 subtle clues.</p>
+            <div class="btn-play">Enter Game</div>
         </a>
 
     </main>
