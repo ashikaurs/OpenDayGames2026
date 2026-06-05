@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Guessing Game</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color), #1e1b4b);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .clues-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .clue {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            border-left: 4px solid var(--accent);
+            text-align: left;
+        }
+
+        .script-display {
+            display: none; /* Hidden by default now */
+            font-size: 2.5rem;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .map-container {
+            display: none; 
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .map-container img {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: #fff; 
+            padding: 10px;
+        }
+
+        .answer-container {
+            display: none; 
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .answer-text {
+            font-size: 2rem;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-script {
+            background-color: #8b5cf6; /* Purple color for the new button */
+        }
+
+        .btn-script:hover { background-color: #7c3aed; }
+
+        .btn-hint {
+            background-color: #64748b;
+        }
+
+        .btn-hint:hover { background-color: #475569; }
+
+        .btn-reveal {
+            background-color: var(--accent);
+        }
+
+        .btn-reveal:hover { background-color: var(--accent-hover); }
+
+        .btn-next {
+            background-color: var(--success);
+            display: none; 
+        }
+
+        .btn-next:hover { background-color: #059669; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress {
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Language Guessing Game</h1>
+        
+        <div class="clues-section" id="clues">
+            </div>
+
+        <div class="script-display" id="script-sample">
+            </div>
+
+        <div class="map-container" id="map-section">
+            <h3 style="margin-bottom: 15px; color: var(--text-muted);">Geographic Distribution:</h3>
+            <img id="map-image" src="" alt="Map of speaking countries">
+        </div>
+
+        <div class="answer-container" id="answer-section">
+            <div class="answer-text" id="answer-text"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-script" id="btn-script" onclick="showScript()">Show Script</button>
+            <button class="btn-hint" id="btn-hint" onclick="showMap()">Need a hint? Show Map</button>
+            <button class="btn-reveal" id="btn-reveal" onclick="showAnswer()">Reveal Answer</button>
+            <button class="btn-next" id="btn-next" onclick="nextLanguage()">Next Language ➔</button>
+        </div>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                clues: [
+                    "This language uses three distinct writing systems simultaneously.",
+                    "It is considered an 'isolate', meaning it has no known genealogical relationship to other major language families."
+                ],
+                script: "すべての人間は、生まれながらにして自由であり",
+                mapUrl: "image/japan.png",
+                answer: "Japanese"
+            },
+            {
+                clues: [
+                    "It is written from right to left.",
+                    "The vocabulary is built on a 'root system' usually consisting of three consonants."
+                ],
+                script: "يولد جميع الناس أحرارًا ومتساوين في الكرامة",
+                mapUrl: "image/arab.png",
+                answer: "Arabic"
+            },
+            {
+                clues: [
+                    "It is the second most spoken native language in the world.",
+                    "It features inverted question and exclamation marks at the beginning of sentences."
+                ],
+                script: "¡Todos los seres humanos nacen libres e iguales!",
+                mapUrl: "image/spain.png",
+                answer: "Spanish"
+            },
+            {
+                clues: [
+                    "For centuries it was written using a completely different alphabet.",
+                    "Words can become extremely long by adding suffix after suffix."
+                ],
+                script: "Bütün insanlar özgür ve eşit doğarlar.",
+                mapUrl: "image/turkey.png",
+                answer: "Turkish"
+            },
+            {
+                clues: [
+                    "Many scientific and mathematical symbols originate from its alphabet.",
+                    "Its written history stretches back over three thousand years."
+                ],
+                script: "Όλοι οι άνθρωποι γεννιούνται ελεύθεροι και ίσοι.",
+                mapUrl: "image/greece.png",
+                answer: "Greek"
+            },
+            {
+                clues: [
+                    "A single syllable can have completely different meanings depending on the tone used.",
+                    "Its writing system is one of the oldest continuously used in the world."
+                ],
+                script: "人人生而自由，在尊严和权利上一律平等。",
+                mapUrl: "image/china.png",
+                answer: "Mandarin"
+            },
+            {
+                clues: [
+                    "If palm leaves had never been used as notebooks, this language might look completely different today.",
+                    "Its writing system is famous for looking almost entirely made of loops and circles.",
+                    "It belongs to the Indo-European family despite being surrounded by Dravidian languages."
+                ],
+                script: "සියලු මනුෂ්‍යයෝ නිදහස්ව හා සමානව උපදිති.",
+                mapUrl: "image/sri_lanka.png",
+                answer: "Sinhala"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const cluesContainer = document.getElementById('clues');
+        const scriptSample = document.getElementById('script-sample');
+        const mapSection = document.getElementById('map-section');
+        const mapImage = document.getElementById('map-image');
+        const answerSection = document.getElementById('answer-section');
+        const answerText = document.getElementById('answer-text');
+        const btnScript = document.getElementById('btn-script');
+        const btnHint = document.getElementById('btn-hint');
+        const btnReveal = document.getElementById('btn-reveal');
+        const btnNext = document.getElementById('btn-next');
+        const progressText = document.getElementById('progress-text');
+
+        function loadLanguage(index) {
+            const currentLang = gameData[index];
+            
+            // Reset UI states
+            scriptSample.style.display = 'none'; // Script hidden initially
+            mapSection.style.display = 'none';
+            answerSection.style.display = 'none';
+            btnScript.style.display = 'block'; // Show script button
+            btnHint.style.display = 'block';
+            btnReveal.style.display = 'block';
+            btnNext.style.display = 'none';
+
+            // Populate Data
+            cluesContainer.innerHTML = '';
+            currentLang.clues.forEach((clue, i) => {
+                cluesContainer.innerHTML += `<div class="clue"><strong>Clue ${i + 1}:</strong> ${clue}</div>`;
+            });
+            
+            scriptSample.textContent = currentLang.script;
+            mapImage.src = currentLang.mapUrl;
+            answerText.textContent = currentLang.answer;
+
+            // Update Progress
+            progressText.textContent = `Language ${index + 1} of ${gameData.length}`;
+        }
+
+        function showScript() {
+            scriptSample.style.display = 'block';
+            btnScript.style.display = 'none'; // Hide button after clicking
+        }
+
+        function showMap() {
+            mapSection.style.display = 'block';
+            btnHint.style.display = 'none'; // Hide button after clicking
+        }
+
+        function showAnswer() {
+            answerSection.style.display = 'block';
+            btnReveal.style.display = 'none';
+            btnHint.style.display = 'none';
+            btnScript.style.display = 'none'; // Hide script button if answer is revealed
+            btnNext.style.display = 'block';
+            
+            // Reveal everything when answer is shown
+            mapSection.style.display = 'block';
+            scriptSample.style.display = 'block';
+        }
+
+        function nextLanguage() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                loadLanguage(currentIndex);
+            } else {
+                // End of game logic
+                document.querySelector('.game-container').innerHTML = `
+                    <h1>Game Complete!</h1>
+                    <p style="font-size: 1.2rem; margin-bottom: 20px;">Thanks for playing.</p>
+                    <button class="btn-reveal" onclick="location.reload()">Play Again</button>
+                `;
+            }
+        }
+
+        // Initialize the game on page load
+        window.onload = () => {
+            loadLanguage(currentIndex);
+        };
+    </script>
+</body>
+</html>

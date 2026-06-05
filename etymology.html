@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Etymology Game</title>
+    <style>
+        :root {
+            --bg-color: #2e1065; /* Deep purple */
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-1: #f59e0b; /* Amber */
+            --accent-2: #ec4899; /* Pink */
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color), #4c1d95, #be185d);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: -webkit-linear-gradient(45deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .emoji-display {
+            font-size: 6rem;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.05);
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .hint-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .hint-box {
+            display: none;
+            background: #fffbeb;
+            border-left: 5px solid var(--accent-1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: left;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .hint-box.definition {
+            background: #fdf2f8;
+            border-left-color: var(--accent-2);
+        }
+
+        .answer-container {
+            display: none;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #ecfdf5;
+            border: 2px solid var(--success);
+            border-radius: 15px;
+            animation: scaleUp 0.5s ease-out;
+        }
+
+        .final-word {
+            font-size: 2.5rem;
+            color: var(--success);
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .etymology-breakdown {
+            font-size: 1.1rem;
+            color: #047857;
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:active { transform: translateY(2px); }
+        button:hover { opacity: 0.9; }
+
+        .btn-hint-1 { background-color: var(--accent-1); color: #78350f;}
+        .btn-hint-2 { background-color: var(--accent-2); }
+        .btn-reveal { background-color: var(--text-main); }
+        .btn-next { background-color: var(--success); display: none; width: 100%; margin-top: 15px; font-size: 1.2rem; padding: 15px;}
+
+        .progress {
+            margin-top: 25px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Emoji Etymology</h1>
+        <div class="subtitle">Guess the modern word based on its ancient literal meaning!</div>
+        
+        <div class="emoji-display" id="emojis">
+            </div>
+
+        <div class="hint-container">
+            <div class="hint-box literal" id="hint-1">
+                <strong>Literal Translation:</strong> <span id="literal-text"></span>
+            </div>
+            <div class="hint-box definition" id="hint-2">
+                <strong>Definition:</strong> <span id="definition-text"></span>
+            </div>
+        </div>
+
+        <div class="answer-container" id="answer-section">
+            <div class="final-word" id="answer-word"></div>
+            <div class="etymology-breakdown" id="answer-origin"></div>
+        </div>
+
+        <div class="controls" id="controls">
+            <button class="btn-hint-1" id="btn-hint-1" onclick="showHint1()">Hint 1: Literal Meaning</button>
+            <button class="btn-hint-2" id="btn-hint-2" onclick="showHint2()" style="display: none;">Hint 2: Definition</button>
+            <button class="btn-reveal" id="btn-reveal" onclick="showAnswer()">Reveal Word</button>
+        </div>
+        <button class="btn-next" id="btn-next" onclick="nextWord()">Next Word ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+
+    <script>
+        // Game Data Dictionary
+        const gameData = [
+            {
+                emojis: "🐎 + 🌊",
+                literal: "River Horse",
+                definition: "A large, thick-skinned, semiaquatic African mammal.",
+                word: "Hippopotamus",
+                origin: "From ancient Greek 'hippos' (horse) + 'potamos' (river)."
+            },
+            {
+                emojis: "🌀 + 🪽",
+                literal: "Spiral Wing",
+                definition: "A type of aircraft which derives both lift and propulsion from spinning rotors.",
+                word: "Helicopter",
+                origin: "From French hélicoptère, via Greek 'helix' (spiral) + 'pteron' (wing)."
+            },
+            {
+                emojis: "⭐ + ⛵",
+                literal: "Star Sailor",
+                definition: "A person who is trained to travel in a spacecraft.",
+                word: "Astronaut",
+                origin: "From Greek 'astron' (star) + 'nautes' (sailor)."
+            },
+            {
+                emojis: "🦁 + 🦷",
+                literal: "Lion's Tooth",
+                definition: "A widely distributed weed of the daisy family, with a rosette of leaves and large bright yellow flowers.",
+                word: "Dandelion",
+                origin: "From French 'dent de lion' (tooth of the lion), referring to the coarsely toothed leaves."
+            },
+            {
+                emojis: "🥩 + 👋",
+                literal: "Farewell to Meat",
+                definition: "A period of public revelry at a regular time each year, typically during the week before Lent.",
+                word: "Carnival",
+                origin: "From Latin 'carne' (meat) + 'vale' (farewell). A reference to fasting during Lent."
+            },
+            {
+                emojis: "🛡️ + ☀️",
+                literal: "Ward-off Sun",
+                definition: "A light umbrella used to give shade from the sun.",
+                word: "Parasol",
+                origin: "From Italian 'para' (to shield/ward off) + 'sole' (sun)."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const emojiDisplay = document.getElementById('emojis');
+        const hint1Box = document.getElementById('hint-1');
+        const hint1Text = document.getElementById('literal-text');
+        const hint2Box = document.getElementById('hint-2');
+        const hint2Text = document.getElementById('definition-text');
+        const answerSection = document.getElementById('answer-section');
+        const answerWord = document.getElementById('answer-word');
+        const answerOrigin = document.getElementById('answer-origin');
+        
+        const btnHint1 = document.getElementById('btn-hint-1');
+        const btnHint2 = document.getElementById('btn-hint-2');
+        const btnReveal = document.getElementById('btn-reveal');
+        const btnNext = document.getElementById('btn-next');
+        const controlsDiv = document.getElementById('controls');
+        const progressText = document.getElementById('progress-text');
+
+        function loadWord(index) {
+            const currentItem = gameData[index];
+            
+            // Reset UI
+            hint1Box.style.display = 'none';
+            hint2Box.style.display = 'none';
+            answerSection.style.display = 'none';
+            btnNext.style.display = 'none';
+            controlsDiv.style.display = 'flex';
+            
+            btnHint1.style.display = 'block';
+            btnHint2.style.display = 'none'; // Hidden until Hint 1 is pressed
+            btnReveal.style.display = 'block';
+
+            // Populate Data
+            emojiDisplay.textContent = currentItem.emojis;
+            // Force re-trigger animation
+            emojiDisplay.style.animation = 'none';
+            emojiDisplay.offsetHeight; /* trigger reflow */
+            emojiDisplay.style.animation = null; 
+
+            hint1Text.textContent = currentItem.literal;
+            hint2Text.textContent = currentItem.definition;
+            answerWord.textContent = currentItem.word;
+            answerOrigin.textContent = currentItem.origin;
+
+            // Update Progress
+            progressText.textContent = `Word ${index + 1} of ${gameData.length}`;
+        }
+
+        function showHint1() {
+            hint1Box.style.display = 'block';
+            btnHint1.style.display = 'none';
+            btnHint2.style.display = 'block'; // Reveal option for next hint
+        }
+
+        function showHint2() {
+            hint2Box.style.display = 'block';
+            btnHint2.style.display = 'none';
+        }
+
+        function showAnswer() {
+            // Show everything just in case they skipped hints
+            hint1Box.style.display = 'block';
+            hint2Box.style.display = 'block';
+            answerSection.style.display = 'block';
+            
+            // Hide all control buttons and show the massive Next button
+            controlsDiv.style.display = 'none';
+            btnNext.style.display = 'block';
+        }
+
+        function nextWord() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                loadWord(currentIndex);
+            } else {
+                document.querySelector('.game-container').innerHTML = `
+                    <h1>Game Complete! 🎓</h1>
+                    <p class="subtitle" style="margin-top: 20px;">You're basically a linguist now.</p>
+                    <button class="btn-reveal" style="margin-top: 20px;" onclick="location.reload()">Play Again</button>
+                `;
+            }
+        }
+
+        // Initialize game
+        window.onload = () => loadWord(currentIndex);
+    </script>
+</body>
+</html>

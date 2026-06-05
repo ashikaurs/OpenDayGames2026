@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landmark Riddles</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #fbbf24; /* Golden yellow */
+            --accent-hover: #f59e0b;
+            --answer-bg: #064e3b; /* Deep emerald */
+            --answer-border: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif; /* Serif font for a classic riddle feel */
+        }
+
+        body {
+            background: linear-gradient(135deg, #020617, #0f172a, #1e293b);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Decorative quote marks */
+        .game-container::before {
+            content: '"';
+            font-size: 8rem;
+            color: rgba(251, 191, 36, 0.1);
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-family: sans-serif;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .riddle-display {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin: 20px 0 40px 0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            text-align: justify;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        .answer-container {
+            display: none;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--answer-bg);
+            border: 2px solid var(--answer-border);
+            border-radius: 8px;
+            animation: scaleUp 0.4s ease-out;
+        }
+
+        .final-answer {
+            font-size: 2rem;
+            color: #34d399; /* Bright mint green */
+            font-weight: bold;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-family: 'Segoe UI', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-reveal {
+            background-color: var(--accent);
+            color: #451a03;
+        }
+
+        .btn-reveal:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
+
+        .btn-next {
+            background-color: var(--text-main);
+            color: var(--card-bg);
+            display: none; 
+            width: 100%;
+        }
+
+        .btn-next:hover { background-color: #cbd5e1; }
+
+        .progress {
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Global Landmarks</h1>
+        <div class="subtitle">Can you guess the famous location from the riddle?</div>
+        
+        <div class="riddle-display" id="riddle-text">
+            <!-- Riddle injected via JS -->
+        </div>
+
+        <div class="answer-container" id="answer-section">
+            <div class="subtitle" style="margin-bottom: 10px; color: #a7f3d0;">The answer is:</div>
+            <div class="final-answer" id="answer-text"></div>
+        </div>
+
+        <div class="controls" id="controls">
+            <button class="btn-reveal" id="btn-reveal" onclick="showAnswer()">Reveal Answer</button>
+        </div>
+        <button class="btn-next" id="btn-next" onclick="nextRiddle()">Next Riddle ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+
+    <script>
+        // Game Data Array
+        const gameData = [
+            {
+                riddle: "I am a serpent of stone, resting on a spine of mountains. I have watched empires rise and fall for millennia. Though an old myth claims the stars can see me, only the earth truly holds me. I was built to keep invaders out, yet now millions travel across the globe just to walk upon my back.",
+                answer: "The Great Wall of China"
+            },
+            {
+                riddle: "I was born in the clouds, sculpted perfectly without a single drop of mortar. For centuries, the rest of the world forgot my name, leaving me hidden beneath a dense green veil. I was a sanctuary for the children of the sun, resting peacefully between two Andean peaks.",
+                answer: "Machu Picchu (Peru)"
+            },
+            {
+                riddle: "Carved almost entirely from granite, I stand as a towering testament to an emperor's might. My massive crowning dome, weighing over 80 tons, was hauled to the sky without modern machines. I am so perfectly proportioned that local legends claim my towering shadow never falls outside my own base.",
+                answer: "The Brihadeeswara Temple (Thanjavur, India)"
+            },
+            {
+                riddle: "Once the glorious, wealthy capital of a mighty southern empire, I was left to ruin amidst a surreal landscape of massive, balancing boulders. Within my ancient boundaries, stone pillars make musical notes when struck, and a magnificent carved chariot sits frozen in time, never turning its wheels.",
+                answer: "Hampi (Karnataka, India)"
+            },
+            {
+                riddle: "My ancient name translates to a 'hundred thousand islands,' though my true number is far fewer. I am a delicate necklace of coral atolls and reefs floating in the turquoise expanse of the Arabian Sea. I am the smallest territory of my nation, accessible only to those seeking pristine, white-sand isolation.",
+                answer: "Lakshadweep (India)"
+            },
+            {
+                riddle: "I am a hollowed crown of stone, standing in the heart of an eternal city. Inside my walls, the sand once drank the blood of warriors and beasts to fuel the roar of eighty thousand voices. Time, fire, and earthquakes have broken my arches, but I remain a monument to ancient games.",
+                answer: "The Colosseum (Rome, Italy)"
+            },
+            {
+                riddle: "I am a teardrop on the cheek of time, carved entirely from white marble. I was born not from war, politics, or commerce, but from an emperor's breaking heart. Beside a sacred river, my reflection changes color with the rising and setting of the sun.",
+                answer: "The Taj Mahal (Agra, India)"
+            },
+            {
+                riddle: "I am the roof of the world, dressed constantly in white, touching the very edge of the sky. I demand absolute respect; those who challenge my slopes unprepared often stay with me forever in a frozen embrace. My local name honors the Goddess Mother of the World.",
+                answer: "Mount Everest (Himalayas)"
+            },
+            {
+                riddle: "Once an imposing fortress, then a royal palace, I am now the world's largest guardian of human genius. A modern geometric diamond of glass sits surprisingly in my courtyard, while the world's most enigmatic smile is locked safely within my endless labyrinth of corridors.",
+                answer: "The Louvre Museum (Paris, France)"
+            },
+            {
+                riddle: "I am the rose-red city, half as old as time. My most famous facade was carved directly into the sheer rock of a narrow desert canyon. I was once a booming trade hub for spices and silks, but for centuries, the western world thought I was just a myth.",
+                answer: "Petra (Jordan)"
+            },
+            {
+                riddle: "I am the last survivor of the ancient wonders, guarded by a colossal creature with a human head and a lion's body. I was built to be a stairway to the stars for a king, hiding his golden secrets in the heart of the desert.",
+                answer: "The Great Pyramid of Giza (Egypt)"
+            },
+            {
+                riddle: "I am the tallest of my kind, forged from iron gathered from the tools of thousands of farmers. I stand proud by a mighty river, honoring the 'Iron Man' who stitched a fractured nation together into one united fabric.",
+                answer: "The Statue of Unity (Gujarat, India)"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const riddleText = document.getElementById('riddle-text');
+        const answerSection = document.getElementById('answer-section');
+        const answerText = document.getElementById('answer-text');
+        const btnReveal = document.getElementById('btn-reveal');
+        const btnNext = document.getElementById('btn-next');
+        const controlsDiv = document.getElementById('controls');
+        const progressText = document.getElementById('progress-text');
+
+        function loadRiddle(index) {
+            const currentItem = gameData[index];
+            
+            // Reset UI states
+            answerSection.style.display = 'none';
+            btnNext.style.display = 'none';
+            controlsDiv.style.display = 'flex';
+            btnReveal.style.display = 'block';
+
+            // Populate Data
+            riddleText.textContent = currentItem.riddle;
+            
+            // Re-trigger animation
+            riddleText.style.animation = 'none';
+            riddleText.offsetHeight; /* trigger reflow */
+            riddleText.style.animation = null; 
+
+            answerText.textContent = currentItem.answer;
+
+            // Update Progress
+            progressText.textContent = `Riddle ${index + 1} of ${gameData.length}`;
+        }
+
+        function showAnswer() {
+            answerSection.style.display = 'block';
+            controlsDiv.style.display = 'none';
+            btnNext.style.display = 'block';
+        }
+
+        function nextRiddle() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                loadRiddle(currentIndex);
+            } else {
+                // End of game logic
+                document.querySelector('.game-container').innerHTML = `
+                    <h1 style="font-size: 3rem;">Master Explorer!</h1>
+                    <p class="subtitle" style="margin-top: 20px; font-size: 1.3rem;">You have journeyed across the globe and solved them all.</p>
+                    <button class="btn-reveal" style="margin-top: 30px;" onclick="location.reload()">Play Again</button>
+                `;
+            }
+        }
+
+        // Initialize the game on page load
+        window.onload = () => {
+            loadRiddle(currentIndex);
+        };
+    </script>
+</body>
+</html>

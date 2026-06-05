@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plot in 3 Pictures: Hollywood Edition</title>
+    <style>
+        :root {
+            --bg-color: #09090b; /* Very dark cinema background */
+            --card-bg: rgba(24, 24, 27, 0.85);
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-1: #e11d48; /* Blood red accent */
+            --accent-hover: #be123c;
+            --hint-bg: #1f2937;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #27272a, var(--bg-color));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border: 1px solid #3f3f46;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 750px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 span {
+            color: var(--accent-1);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-size: 1.1rem;
+        }
+
+        .emoji-display {
+            font-size: 5.5rem;
+            margin: 20px 0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #3f3f46;
+            border-radius: 15px;
+            letter-spacing: 20px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        .hint-container {
+            display: none; /* Hidden by default */
+            background: var(--hint-bg);
+            border-left: 4px solid var(--accent-1);
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 25px;
+            text-align: center;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .answer-container {
+            display: none;
+            margin-bottom: 30px;
+            padding: 20px;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        .final-movie {
+            font-size: 2.8rem;
+            color: var(--accent-1);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-hint {
+            background-color: #52525b;
+        }
+
+        .btn-hint:hover { background-color: #3f3f46; }
+
+        .btn-reveal {
+            background-color: var(--accent-1);
+        }
+
+        .btn-reveal:hover { background-color: var(--accent-hover); box-shadow: 0 0 15px var(--accent-1); }
+
+        .btn-next {
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            display: none; 
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px;
+        }
+
+        .btn-next:hover { background-color: #d4d4d8; }
+
+        .progress {
+            margin-top: 30px;
+            color: #52525b;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInScale { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Plot in <span>3</span> Pictures</h1>
+        <div class="subtitle">Can you guess the Hollywood thriller from these three clues?</div>
+        
+        <div class="emoji-display" id="emojis">
+            <!-- Emojis go here -->
+        </div>
+
+        <div class="hint-container" id="hint-section">
+            <span id="hint-text"></span>
+        </div>
+
+        <div class="answer-container" id="answer-section">
+            <div class="final-movie" id="answer-movie"></div>
+        </div>
+
+        <div class="controls" id="controls">
+            <button class="btn-hint" id="btn-hint" onclick="showHint()">Show Plot Hint</button>
+            <button class="btn-reveal" id="btn-reveal" onclick="showAnswer()">Reveal Movie</button>
+        </div>
+        <button class="btn-next" id="btn-next" onclick="nextMovie()">Next Movie ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+
+    <script>
+        // Game Data Array
+       // Game Data Array
+        const gameData = [
+            {
+                emojis: "🎈 🤡 ⛵",
+                hint: "A shape-shifting entity terrorizes the children of a small Maine town every 27 years.",
+                movie: "IT"
+            },
+            {
+                emojis: "☕ 🥄 😵‍💫",
+                hint: "A weekend visit to meet the girlfriend's parents uncovers a terrifying psychological operation.",
+                movie: "Get Out"
+            },
+            {
+                emojis: "📺 📼 ☎️",
+                hint: "After watching a cursed videotape, the viewer receives a phone call giving them exactly seven days to live.",
+                movie: "The Ring"
+            },
+            {
+                emojis: "🪓 🏨 ❄️",
+                hint: "A writer takes a winter caretaking job at an isolated hotel, where sinister forces drive him to madness.",
+                movie: "The Shining"
+            },
+            {
+                emojis: "🤫 👣 🌽",
+                hint: "A family must navigate their lives in absolute silence to survive creatures that hunt by sound.",
+                movie: "A Quiet Place"
+            },
+            {
+                emojis: "👏 🏚️ ✝️",
+                hint: "Paranormal investigators try to help a family terrorized by a dark presence in their secluded farmhouse.",
+                movie: "The Conjuring"
+            },
+            // Newly Added Movies
+            {
+                emojis: "👦 😴 👹",
+                hint: "A family moves to avoid a haunting, only to discover their comatose son is trapped in a dark astral dimension.",
+                movie: "Insidious"
+            },
+            {
+                emojis: "🎲 🐒 🦏",
+                hint: "A magical board game unleashes jungle hazards upon its players with every roll of the dice.",
+                movie: "Jumanji"
+            },
+            {
+                emojis: "🌋 🌊 🗓️",
+                hint: "A writer races to save his family as a predicted global cataclysm destroys the Earth.",
+                movie: "2012"
+            },
+            {
+                emojis: "👩‍🚀 💥 🛰️",
+                hint: "Two astronauts must survive and find a way back to Earth after debris destroys their space shuttle.",
+                movie: "Gravity"
+            },
+            {
+                emojis: "🌽 🚀 ⏳",
+                hint: "A team of explorers travels through a wormhole in space to ensure humanity's survival.",
+                movie: "Interstellar"
+            },
+            {
+                emojis: "🌪️ 🗽 ❄️",
+                hint: "A climatologist makes a daring trek across America to reach his son during a sudden global ice age.",
+                movie: "The Day After Tomorrow"
+            },
+            {
+                emojis: "📖 🌲 🧟",
+                hint: "Friends isolate themselves in a remote cabin and accidentally unleash flesh-possessing demons using an ancient book.",
+                movie: "Evil Dead"
+            },
+            {
+                emojis: "👧 🏜️ 🧟‍♀️",
+                hint: "A journalist's young daughter vanishes into the desert, only to return eight years later as something truly terrifying.",
+                movie: "Lee Cronin's The Mummy (2026)"
+            },
+            {
+                emojis: "🚢 🧊 🚪",
+                hint: "A tragic romance unfolds aboard an unsinkable luxury liner that meets a frosty end.",
+                movie: "Titanic"
+            },
+            {
+                emojis: "💊 🕶️ 💻",
+                hint: "A hacker discovers reality is a simulation and must choose between a red and blue pill.",
+                movie: "The Matrix"
+            },
+            {
+                emojis: "🦖 🚁 🧬",
+                hint: "Scientists use ancient DNA to bring dinosaurs back to life for a theme park, with disastrous results.",
+                movie: "Jurassic Park"
+            },
+            {
+                emojis: "💤 🌀 👔",
+                hint: "Corporate thieves use experimental technology to steal secrets from within people's dreams.",
+                movie: "Inception"
+            },
+            {
+                emojis: "🤖 🕶️ 🏍️",
+                hint: "A cyborg is sent back in time to assassinate the mother of the future human resistance leader.",
+                movie: "The Terminator"
+            },
+        ];
+
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const emojiDisplay = document.getElementById('emojis');
+        const hintSection = document.getElementById('hint-section');
+        const hintText = document.getElementById('hint-text');
+        const answerSection = document.getElementById('answer-section');
+        const answerMovie = document.getElementById('answer-movie');
+        
+        const btnHint = document.getElementById('btn-hint');
+        const btnReveal = document.getElementById('btn-reveal');
+        const btnNext = document.getElementById('btn-next');
+        const controlsDiv = document.getElementById('controls');
+        const progressText = document.getElementById('progress-text');
+
+        function loadMovie(index) {
+            const currentItem = gameData[index];
+            
+            // Reset UI for the new movie
+            hintSection.style.display = 'none';
+            answerSection.style.display = 'none';
+            btnNext.style.display = 'none';
+            controlsDiv.style.display = 'flex';
+            
+            btnHint.style.display = 'block';
+            btnReveal.style.display = 'block';
+
+            // Populate Data
+            emojiDisplay.textContent = currentItem.emojis;
+            
+            // Reset animation
+            emojiDisplay.style.animation = 'none';
+            emojiDisplay.offsetHeight; /* trigger reflow */
+            emojiDisplay.style.animation = null; 
+
+            hintText.textContent = `"${currentItem.hint}"`;
+            answerMovie.textContent = currentItem.movie;
+
+            // Update Progress
+            progressText.textContent = `Scene ${index + 1} of ${gameData.length}`;
+        }
+
+        function showHint() {
+            hintSection.style.display = 'block';
+            btnHint.style.display = 'none'; // Hide hint button once clicked
+        }
+
+        function showAnswer() {
+            // Reveal the answer and the hint if they skipped it
+            hintSection.style.display = 'block';
+            answerSection.style.display = 'block';
+            
+            // Hide control buttons and show the Next button
+            controlsDiv.style.display = 'none';
+            btnNext.style.display = 'block';
+        }
+
+        function nextMovie() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                loadMovie(currentIndex);
+            } else {
+                // Game Over Screen
+                document.querySelector('.game-container').innerHTML = `
+                    <h1>The End.</h1>
+                    <p class="subtitle" style="margin-top: 15px; color: #f4f4f5;">You survived the feature presentation.</p>
+                    <button class="btn-reveal" style="margin-top: 30px;" onclick="location.reload()">Replay Movie</button>
+                `;
+            }
+        }
+
+        // Initialize game on load
+        window.onload = () => loadMovie(currentIndex);
+    </script>
+</body>
+</html>
