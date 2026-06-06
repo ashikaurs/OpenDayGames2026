@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Heist Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Blueprint & High-Tech Palette */
+            --bg-base: #0a1128;
+            --blueprint-line: rgba(28, 163, 236, 0.15);
+            --neon-blue: #00f0ff;
+            --neon-blue-hover: #00b7c4;
+            --alert-red: #ff003c;
+            --success-green: #00ff66;
+            --terminal-bg: rgba(0, 20, 40, 0.7);
+            --text-main: #e2f1f8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                linear-gradient(var(--blueprint-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .blueprint-container {
+            background: var(--terminal-bg);
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8ab4f8;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .target-box {
+            border-left: 4px solid var(--alert-red);
+            padding: 10px 15px;
+            background: rgba(255, 0, 60, 0.05);
+            margin-bottom: 25px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .target-title {
+            color: var(--alert-red);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .target-name {
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .instruction {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #8ab4f8;
+        }
+
+        .plan-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .step-item {
+            padding: 15px 20px;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            color: var(--neon-blue);
+            font-weight: bold;
+            margin-right: 15px;
+            min-width: 85px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reveal {
+            background-color: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+        }
+
+        .btn-reveal:hover {
+            background-color: var(--neon-blue);
+            color: var(--bg-base);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 10px;
+            padding: 20px;
+            background: rgba(255, 0, 60, 0.1);
+            border-left: 4px solid var(--alert-red);
+            animation: fadeIn 0.4s ease-out;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--alert-red);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .result-text {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2f1f8;
+        }
+
+        .btn-next {
+            display: none;
+            background-color: var(--success-green);
+            color: var(--bg-base);
+        }
+
+        .btn-next:hover {
+            background-color: #00d957;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.4);
+        }
+
+        .progress {
+            text-align: center;
+            margin-top: 20px;
+            color: #8ab4f8;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #8ab4f8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Share Tech Mono', monospace;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover { color: var(--neon-blue); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="blueprint-container">
+        <h1>The Heist Architect</h1>
+        <div class="subtitle">Find the logic flaw in the plan</div>
+        
+        <div class="target-box">
+            <div class="target-title">Target Location</div>
+            <div class="target-name" id="target-name"></div>
+        </div>
+
+        <div class="instruction">Read the thief's 4-step plan below. Can you spot the fatal logic flaw?</div>
+
+        <div class="plan-container" id="plan-container">
+            <!-- Steps injected here -->
+        </div>
+
+        <div class="controls" id="controls">
+            <button class="btn-action btn-reveal" id="btn-reveal" onclick="showAnswer()">Reveal The Flaw</button>
+        </div>
+
+        <div class="result-box" id="result-box">
+            <div class="result-title">Fatal Flaw Detected:</div>
+            <div class="result-text" id="result-text"></div>
+        </div>
+
+        <button class="btn-action btn-next" id="btn-next" onclick="nextHeist()">Next Blueprint ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+    
+    <a href="index.html" class="back-link">[ ← RETURN TO MAIN TERMINAL ]</a>
+
+    <script>
+        // Here are the 4 complete heist scenarios
+        const heists = [
+            {
+                target: "The Diamond Exchange",
+                steps: [
+                    "Cut the main power grid to disable the lobby surveillance cameras.",
+                    "Slip past the sleeping security guard in the darkness.",
+                    "Take the electronic elevator down to the basement vault.",
+                    "Use a thermal drill to cut through the vault door."
+                ],
+                explanation: "The flaw is in Step 3! If the thief cut the main power grid in Step 1, the electronic elevator won't work. They are trapped on the ground floor."
+            },
+            {
+                target: "National Museum of Antiquities",
+                steps: [
+                    "Deploy a smoke grenade into the corridor to reveal the invisible laser security grid.",
+                    "Carefully navigate through the visible red beams without touching them.",
+                    "Cut the glass display case using a diamond-tipped cutter.",
+                    "Swap the ancient artifact with a replica of the exact same weight."
+                ],
+                explanation: "The flaw is in Step 1! While smoke does make lasers visible, deploying a smoke grenade inside a museum will instantly trigger the fire alarms and sprinkler systems before the thief even takes a step."
+            },
+            {
+                target: "The Silent Vault (Acoustic Security)",
+                steps: [
+                    "Equip high-tech sound-dampening stealth boots.",
+                    "Enter the vault room, which uses acoustic sensors that trigger alarms at any noise over 20 decibels.",
+                    "Plant C4 plastic explosives on the safe hinges and detonate.",
+                    "Grab the gold bars and escape via the extraction chopper."
+                ],
+                explanation: "The flaw is in Step 3! They are standing in a room with highly sensitive acoustic sensors. Detonating C4 explosives will instantly trigger the sound alarms."
+            },
+            {
+                target: "Casino Cash Room",
+                steps: [
+                    "Hack the pressure-sensitive floor so it expects exactly 200 lbs (your body weight plus your empty gear).",
+                    "Walk across the room undetected to the cash pallets.",
+                    "Load 50 lbs of cash into your duffel bag.",
+                    "Walk back across the pressure floor to the exit."
+                ],
+                explanation: "The flaw is in Step 4! By adding 50 lbs of cash to the bag, the thief's total weight is now 250 lbs. The floor was hacked to expect exactly 200 lbs, so it will trigger the alarm the moment they step on it to leave."
+            }
+        ];
+
+        let currentHeistIndex = 0;
+
+        const targetName = document.getElementById('target-name');
+        const planContainer = document.getElementById('plan-container');
+        const btnReveal = document.getElementById('btn-reveal');
+        const resultBox = document.getElementById('result-box');
+        const resultText = document.getElementById('result-text');
+        const btnNext = document.getElementById('btn-next');
+        const progressText = document.getElementById('progress-text');
+        const controlsDiv = document.getElementById('controls');
+
+        function loadHeist(index) {
+            const currentHeist = heists[index];
+            
+            // Reset visibility
+            resultBox.style.display = 'none';
+            btnNext.style.display = 'none';
+            controlsDiv.style.display = 'flex';
+            planContainer.innerHTML = '';
+            
+            targetName.textContent = currentHeist.target;
+
+            // Build the static list of steps
+            currentHeist.steps.forEach((step, i) => {
+                const div = document.createElement('div');
+                div.className = 'step-item';
+                div.innerHTML = `<span class="step-num">[STEP 0${i + 1}]</span> <span>${step}</span>`;
+                planContainer.appendChild(div);
+            });
+
+            progressText.textContent = `Blueprint 0${index + 1} // 0${heists.length}`;
+        }
+
+        function showAnswer() {
+            controlsDiv.style.display = 'none';
+            resultBox.style.display = 'block';
+            btnNext.style.display = 'block';
+            resultText.textContent = heists[currentHeistIndex].explanation;
+        }
+
+        function nextHeist() {
+            if (currentHeistIndex < heists.length - 1) {
+                currentHeistIndex++;
+                loadHeist(currentHeistIndex);
+            } else {
+                document.querySelector('.blueprint-container').innerHTML = `
+                    <h1 style="font-size: 2.2rem; margin-bottom: 20px;">ALL BLUEPRINTS CLEARED</h1>
+                    <div style="text-align: center; font-size: 1.1rem; color: #8ab4f8; margin-bottom: 30px;">
+                        Operation planning complete. Your logic is flawless.
+                    </div>
+                    <button class="btn-action btn-reveal" style="display: block;" onclick="location.reload()">REBOOT SYSTEM</button>
+                    <a href="index.html" class="back-link">[ ← RETURN TO MAIN TERMINAL ]</a>
+                `;
+            }
+        }
+
+        window.onload = () => {
+            loadHeist(currentHeistIndex);
+        };
+    </script>
+</body>
+</html>

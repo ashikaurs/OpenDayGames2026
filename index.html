@@ -52,7 +52,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 20px;
         }
 
         h1 {
@@ -75,14 +75,39 @@
         }
 
         /* -------------------------------------
+           GENRE SECTION STYLING
+        -------------------------------------- */
+        .genre-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .genre-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid rgba(15, 23, 42, 0.1);
+            width: 80%;
+            text-align: center;
+        }
+
+        /* -------------------------------------
            THE 3-2 PYRAMID LAYOUT 
         -------------------------------------- */
         .arcade-grid {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* This perfectly centers the bottom 2 cards */
-            gap: 35px; /* Space between cards */
-            max-width: 1200px; /* Limits width so exactly 3 fit on top, forcing 2 to the bottom */
+            justify-content: center;
+            gap: 35px;
             width: 100%;
         }
 
@@ -90,22 +115,19 @@
            THE CARD STYLING (Wider & Shorter)
         -------------------------------------- */
         .card {
-            width: 340px; /* Fixed width to make them rectangular */
+            width: 340px; 
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 25px; /* Shorter padding */
+            padding: 25px; 
             text-align: center;
             text-decoration: none;
             color: var(--text-main);
             box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
             transition: all 0.4s ease;
             position: relative;
-            
-            /* Floating Animation */
             animation: float 6s ease-in-out infinite;
         }
 
-        /* Stagger the floating animation so they move in a wave */
         .card:nth-child(1) { animation-delay: 0s; }
         .card:nth-child(2) { animation-delay: 1s; }
         .card:nth-child(3) { animation-delay: 2s; }
@@ -127,7 +149,7 @@
         .card:hover {
             transform: scale(1.04) translateY(-5px) !important;
             box-shadow: 0 15px 35px var(--shadow-color) !important;
-            z-index: 2; /* Brings hovered card to front */
+            z-index: 2; 
         }
 
         .card h2 {
@@ -171,14 +193,11 @@
            MOBILE RESPONSIVENESS
         -------------------------------------- */
         @media (max-width: 1150px) {
-            /* On medium screens, show 2 cards per row instead of 3 */
-            .arcade-grid {
-                max-width: 800px; 
-            }
+            .arcade-grid { max-width: 800px; }
+            .genre-title { width: 90%; font-size: 1.8rem; }
         }
 
         @media (max-width: 768px) {
-            /* On small screens, stack them in 1 column */
             h1 { font-size: 2.8rem; }
             .arcade-grid {
                 flex-direction: column;
@@ -188,6 +207,7 @@
                 width: 100%;
                 max-width: 400px;
             }
+            .genre-title { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -198,44 +218,79 @@
         <div class="subtitle">Select Your Challenge</div>
     </header>
 
-    <main class="arcade-grid">
+    <main>
         
-        <!-- Top Row (3 Cards) -->
-        <a href="languages.html" class="card theme-blue">
-            <h2>Linguistic Isolate</h2>
-            <p>Decipher the scripts to uncover languages from around the globe.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
+        <!-- GENRE 1: CINEMA -->
+        <section class="genre-section">
+            <h2 class="genre-title">🎬 The Cinema Showcase</h2>
+            <div class="arcade-grid">
+                <a href="hollywood.html" class="card theme-gold">
+                    <h2>Plot in 3 Pictures (Hollywood)</h2>
+                    <p>Test your knowledge. Guess the iconic Hollywood movie using 3 emojis.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
 
-        <a href="hollywood.html" class="card theme-gold">
-            <h2>Plot in 3 Pictures(Hollywood)</h2>
-            <p>Test your knowledge. Guess the iconic Hollywood movie using 3 emojis.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
-         <a href="sandalwood.html" class="card theme-gold">
-            <h2>Plot in 3 Pictures(Sandalwood)</h2>
-            <p>Test your knowledge. Guess the iconic Sandalwood movie using 3 emojis.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
+                <a href="sandalwood.html" class="card theme-red">
+                    <h2>Plot in 3 Pictures (Sandalwood)</h2>
+                    <p>Test your knowledge. Guess the iconic Sandalwood movie using 3 emojis.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+            </div>
+        </section>
 
-        <a href="etymology.html" class="card theme-maroon">
-            <h2>Emoji Etymology</h2>
-            <p>Discover the ancient, literal roots of modern vocabulary.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
+        <!-- GENRE 2: MYSTERY & TECH -->
+        <section class="genre-section">
+            <h2 class="genre-title">🕵️‍♂️ Mystery, Tech & Logic</h2>
+            <div class="arcade-grid">
+                <a href="detective.html" class="card theme-blue">
+                    <h2>The Detective's Desk</h2>
+                    <p>Every suspect has a story. Read twisting micro-mysteries and spot the impossible detail.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
 
-        <!-- Bottom Row (2 Cards) -->
-        <a href="landmarks.html" class="card theme-red">
-            <h2>Global Landmarks</h2>
-            <p>Solve cryptic riddles to identify breathtaking wonders of the world.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
+                <a href="heist.html" class="card theme-purple">
+                    <h2>The Heist Architect</h2>
+                    <p>Debug the master plan. Spot the fatal logic flaw before the alarm sounds.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
 
-        <a href="whoami.html" class="card theme-purple">
-            <h2>Who Am I</h2>
-            <p>Unleash your intelligence with 3 subtle clues.</p>
-            <div class="btn-play">Enter Game</div>
-        </a>
+                <a href="deepfake.html" class="card theme-maroon">
+                    <h2>Fact or Deepfake</h2>
+                    <p>Can you spot the matrix? Test your cutting-edge Tech reality.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- GENRE 3: WORLD & WORDPLAY -->
+        <section class="genre-section">
+            <h2 class="genre-title">🌍 World & Wordplay</h2>
+            <div class="arcade-grid">
+                <a href="languages.html" class="card theme-blue">
+                    <h2>Linguistic Isolate</h2>
+                    <p>Decipher the scripts to uncover languages from around the globe.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+
+                <a href="etymology.html" class="card theme-gold">
+                    <h2>Emoji Etymology</h2>
+                    <p>Discover the ancient, literal roots of modern vocabulary.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+
+                <a href="landmarks.html" class="card theme-red">
+                    <h2>Global Landmarks</h2>
+                    <p>Solve cryptic riddles to identify breathtaking wonders of the world.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+
+                <a href="whoami.html" class="card theme-purple">
+                    <h2>Who Am I</h2>
+                    <p>Unleash your intelligence with 3 subtle clues.</p>
+                    <div class="btn-play">Enter Game</div>
+                </a>
+            </div>
+        </section>
 
     </main>
 

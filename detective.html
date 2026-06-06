@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Detective's Desk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Special+Elite&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Mystery & Suspense Palette */
+            --bg-dark: #121212;
+            --paper: #eaddcf; /* Old parchment color */
+            --ink: #1a1a1a;
+            --blood-red: #8b0000;
+            --accent-hover: #a52a2a;
+            --muted-text: #888888;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #2a2a2a 0%, #121212 100%);
+            color: var(--paper);
+            /* Added offline fallback fonts (Segoe UI, Arial) */
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+      .desk-container {
+            /* 1. Set the backup paper color */
+            background-color: var(--paper);
+             
+            /* 2. Set EXACTLY ONE background image */
+            background-image: url('image/age.png'); 
+            
+            /* 3. Stop it from tiling 4 times and stretch it perfectly */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            
+            color: var(--ink);
+            border-radius: 4px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(139, 69, 19, 0.2);
+            position: relative;
+        }
+
+        /* Top Secret Stamp Effect */
+        .desk-container::before {
+            content: 'CONFIDENTIAL';
+            position: absolute;
+            top: 20px;
+            right: -20px;
+            /* Added offline fallback (Courier New) */
+            font-family: 'Special Elite', 'Courier New', Courier, monospace;
+            font-size: 2rem;
+            color: rgba(139, 0, 0, 0.2);
+            transform: rotate(15deg);
+            border: 3px solid rgba(139, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        h1 {
+            /* Added offline fallback (Times New Roman, Georgia) */
+            font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--ink);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .case-number {
+            text-align: center;
+            font-family: 'Special Elite', 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            color: var(--blood-red);
+            margin-bottom: 30px;
+            border-bottom: 2px dashed var(--ink);
+            padding-bottom: 20px;
+        }
+
+        .story-box {
+            font-family: 'Special Elite', 'Courier New', Courier, monospace;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+        }
+
+        .suspects-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .btn-suspect {
+            padding: 15px 20px;
+            background: transparent;
+            border: 2px solid var(--ink);
+            border-radius: 4px;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--ink);
+        }
+
+        .btn-suspect:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .btn-suspect.selected-wrong {
+            background: #ffcccc;
+            border-color: var(--blood-red);
+            color: var(--blood-red);
+            text-decoration: line-through;
+        }
+
+        .btn-suspect.selected-right {
+            background: #d4edda;
+            border-color: #155724;
+            color: #155724;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-left: 4px solid var(--blood-red);
+            background: rgba(139, 0, 0, 0.05);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .result-title {
+            font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--blood-red);
+            margin-bottom: 10px;
+        }
+
+        .result-text {
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .btn-next {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--blood-red);
+            color: white;
+            border: none;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: background 0.3s;
+        }
+
+        .btn-next:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: var(--muted-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover { color: var(--paper); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="desk-container">
+        <h1>The Detective's Desk</h1>
+        <div class="case-number" id="case-number">CASE FILE #001</div>
+        
+        <div class="story-box" id="story-text"></div>
+
+        <div class="question" id="question-text">Who is lying?</div>
+
+        <div class="suspects-container" id="suspects-container">
+            </div>
+
+        <div class="result-box" id="result-box">
+            <div class="result-title" id="result-title"></div>
+            <div class="result-text" id="result-text"></div>
+        </div>
+
+        <button class="btn-next" id="btn-next" onclick="nextCase()">Next Case File ➔</button>
+    </div>
+    
+    <a href="index.html" class="back-link">← Return to Arcade</a>
+
+    <script>
+        const cases = [
+            {
+                story: "A wealthy collector of occult artifacts was robbed at exactly 3:00 AM. The entire neighborhood was experiencing a massive power outage caused by a severe, cloud-covered thunderstorm. The detective interrogated three suspects. The Janitor claimed he was in the basement fixing the fuse box. The Maid claimed she was fast asleep. The Historian claimed he was awake, reading an ancient grimoire by the light of the full moon.",
+                suspects: ["The Janitor", "The Maid", "The Historian"],
+                culprit: "The Historian",
+                explanation: "The Historian is lying. If there was a severe, cloud-covered thunderstorm outside, there would be no moonlight to read by."
+            },
+            {
+                story: "During a midnight séance, the lights were completely extinguished, plunging the room into pitch black darkness. Suddenly, a scream rang out. When the candles were lit, the widow's diamond necklace was gone. The Nephew claimed he never left his chair. The Cook claimed she was holding her breath in fear. The Medium claimed the spirits showed her a vision of the thief slipping the necklace into a red scarf.",
+                suspects: ["The Nephew", "The Cook", "The Medium"],
+                culprit: "The Medium",
+                explanation: "The Medium is lying. In pitch black darkness, the human eye cannot perceive color. She couldn't have known the scarf was red unless she had seen it before the lights went out."
+            },
+            {
+                story: "An infamous art critic was found poisoned in a locked, underground, windowless wine cellar. Only three people had access. The Rival Artist claimed he had been outside painting in the pouring rain all afternoon. The Gallery Owner claimed she was upstairs making phone calls. The Rival Artist's coat, however, was completely dry when the police arrived.",
+                suspects: ["The Rival Artist", "The Gallery Owner", "The victim (suicide)"],
+                culprit: "The Rival Artist",
+                explanation: "The Rival Artist is lying. He claimed he was outside painting in the pouring rain, but his coat was entirely dry."
+            },
+           {
+                story: "A famous psychic was murdered in her parlor on a bitterly cold winter night. The police arrived to find the room incredibly warm, with a roaring fire in the hearth. The Nephew claimed he was walking outside in the freezing cold, peeked through the parlor window, and saw the Maid standing over the body with a knife. The Maid claimed she was in the kitchen the whole time.",
+                suspects: ["The Nephew", "The Maid", "A Wandering Spirit"],
+                culprit: "The Nephew",
+                explanation: "The Nephew is lying. On a freezing winter night, if the room inside is incredibly warm with a roaring fire, the window glass would be completely fogged up with condensation. He could not have peered through it from the outside to see anything clearly."
+            }
+        ];
+
+        let currentCaseIndex = 0;
+
+        const storyText = document.getElementById('story-text');
+        const caseNumber = document.getElementById('case-number');
+        const suspectsContainer = document.getElementById('suspects-container');
+        const resultBox = document.getElementById('result-box');
+        const resultTitle = document.getElementById('result-title');
+        const resultText = document.getElementById('result-text');
+        const btnNext = document.getElementById('btn-next');
+        const questionText = document.getElementById('question-text');
+
+        function loadCase(index) {
+            const currentCase = cases[index];
+            
+            // Reset UI
+            resultBox.style.display = 'none';
+            btnNext.style.display = 'none';
+            suspectsContainer.innerHTML = '';
+            
+            caseNumber.textContent = `CASE FILE #00${index + 1}`;
+            storyText.textContent = currentCase.story;
+            
+            // Re-trigger animation
+            storyText.style.animation = 'none';
+            storyText.offsetHeight; 
+            storyText.style.animation = null; 
+
+            // Create buttons
+            currentCase.suspects.forEach(suspect => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-suspect';
+                btn.textContent = suspect;
+                btn.onclick = () => checkAnswer(btn, suspect, currentCase.culprit, currentCase.explanation);
+                suspectsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(clickedBtn, selectedSuspect, actualCulprit, explanation) {
+            // Disable all buttons after a guess
+            const allBtns = document.querySelectorAll('.btn-suspect');
+            allBtns.forEach(b => {
+                b.style.pointerEvents = 'none';
+                if (b.textContent === actualCulprit) {
+                    b.classList.add('selected-right');
+                }
+            });
+
+            resultBox.style.display = 'block';
+            btnNext.style.display = 'block';
+
+            if (selectedSuspect === actualCulprit) {
+                clickedBtn.classList.add('selected-right');
+                resultTitle.textContent = "Case Solved.";
+                resultTitle.style.color = "#155724";
+                resultBox.style.borderLeftColor = "#155724";
+                resultBox.style.background = "#d4edda";
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                resultTitle.textContent = "Incorrect Deduction.";
+                resultTitle.style.color = "var(--blood-red)";
+                resultBox.style.borderLeftColor = "var(--blood-red)";
+                resultBox.style.background = "rgba(139, 0, 0, 0.05)";
+            }
+
+            resultText.textContent = explanation;
+        }
+
+        function nextCase() {
+            if (currentCaseIndex < cases.length - 1) {
+                currentCaseIndex++;
+                loadCase(currentCaseIndex);
+            } else {
+                document.querySelector('.desk-container').innerHTML = `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 20px;">All Cases Closed</h1>
+                    <div class="story-box" style="text-align: center; font-size: 1.2rem;">
+                        Excellent deductive reasoning, detective. The truth rarely hides for long.
+                    </div>
+                    <button class="btn-next" style="display: block; margin-top: 30px;" onclick="location.reload()">Reopen Files</button>
+                `;
+            }
+        }
+
+        // Initialize first case
+        window.onload = () => {
+            loadCase(currentCaseIndex);
+        };
+    </script>
+</body>
+</html>

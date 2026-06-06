@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fact or Deepfake?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Tech-focused Daylight Palette */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            
+            --fact-color: #059669; /* Emerald Green */
+            --fact-hover: #047857;
+            --fake-color: #e11d48; /* Rose Red */
+            --fake-hover: #be123c;
+            
+            --accent: #6d28d9; /* Deep Purple for Tech Vibe */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0, #cbd5e1);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border-top: 6px solid var(--accent);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .statement-box {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 30px 0;
+            padding: 30px 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-choice {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-transform: uppercase;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-fact { background-color: var(--fact-color); }
+        .btn-fact:hover { background-color: var(--fact-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(5, 150, 105, 0.3); }
+
+        .btn-fake { background-color: var(--fake-color); }
+        .btn-fake:hover { background-color: var(--fake-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(225, 29, 72, 0.3); }
+
+        /* Result Section */
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 12px;
+            animation: scaleUp 0.4s ease-out;
+            text-align: left;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .result-explanation {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .btn-next {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background-color: var(--text-main);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+
+        .btn-next:hover { background-color: var(--accent); }
+
+        .progress {
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover { color: var(--accent); }
+
+        /* Correct/Incorrect Color Classes */
+        .bg-correct { background-color: #d1fae5; border: 2px solid #059669; }
+        .text-correct { color: #047857; }
+        .bg-wrong { background-color: #ffe4e6; border: 2px solid #e11d48; }
+        .text-wrong { color: #be123c; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .controls { flex-direction: column; }
+            h1 { font-size: 1.8rem; }
+            .statement-box { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Fact or Deepfake?</h1>
+        <div class="subtitle">Test Your Tech Reality</div>
+        
+        <div class="statement-box" id="statement-text"></div>
+
+        <div class="controls" id="controls">
+            <button class="btn-choice btn-fact" onclick="checkAnswer('Fact')">It's a Fact</button>
+            <button class="btn-choice btn-fake" onclick="checkAnswer('Deepfake')">It's a Deepfake</button>
+        </div>
+
+        <div class="result-container" id="result-section">
+            <div class="result-title" id="result-title"></div>
+            <div class="result-explanation" id="result-explanation"></div>
+        </div>
+
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+        
+        <a href="index.html" class="back-link">← Back to Arcade</a>
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                statement: "Hackers used AI to deepfake a company director's voice on a phone call, successfully tricking a bank manager into transferring $35 million.",
+                answer: "Fact",
+                explanation: "This actually happened in 2020. Cybercriminals used highly sophisticated AI voice-cloning technology to mimic the director of a company, executing one of the largest AI-assisted heists in history."
+            },
+            {
+                statement: "Malicious AI is being used to 'deepfake' satellite imagery, adding fake buildings or hiding unauthorized city construction to trick automated map systems.",
+                answer: "Fact",
+                explanation: "Deepfake geography is a growing cybersecurity threat. Researchers have proven it is entirely possible to manipulate satellite data to hide illegal construction or create fake geographical features, bypassing traditional surveillance."
+            },
+            {
+                statement: "A unified, nationwide blockchain network is currently tracking 100% of all pharmaceutical drugs manufactured in India to prevent counterfeiting.",
+                answer: "Deepfake",
+                explanation: "Fiction! While many developers are actively building decentralized blockchain systems to verify the pharmaceutical custody chain, a unified nationwide system tracking every single drug does not exist yet."
+            },
+            {
+                statement: "An AI system successfully sued a human and was legally granted a patent for an invention it generated entirely on its own.",
+                answer: "Deepfake",
+                explanation: "Fiction! Courts in the US and UK have repeatedly ruled that an AI cannot be legally listed as an inventor. A human being must hold the patent, no matter how much of the work the AI did."
+            },
+            {
+                statement: "AI algorithms can successfully detect a deepfake video by analyzing the invisible color changes in a person's face caused by their heartbeat.",
+                answer: "Fact",
+                explanation: "This technique is called photoplethysmography. Human faces subtly change color with every heartbeat as blood pumps. AI generators usually fail to replicate this underlying biological pulse, allowing detection algorithms to spot the fakes."
+            },
+            {
+                statement: "The first completely AI-written suspense novel was published under a fake human pen name and successfully reached the New York Times Bestseller list.",
+                answer: "Deepfake",
+                explanation: "Fiction! While AI is frequently used to write books (and thousands flood online marketplaces), a completely AI-generated novel has not yet secretly topped the NYT bestseller list undetected."
+            },
+            {
+                statement: "There are fully AI-generated, photorealistic news anchors currently broadcasting live daily news on major television networks.",
+                answer: "Fact",
+                explanation: "Several countries, including India and China, have officially introduced AI news anchors. They can work 24/7, speak dozens of languages, and generate perfect lip-syncing directly from text scripts."
+            }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+
+        const statementText = document.getElementById('statement-text');
+        const resultSection = document.getElementById('result-section');
+        const resultTitle = document.getElementById('result-title');
+        const resultExplanation = document.getElementById('result-explanation');
+        const controlsDiv = document.getElementById('controls');
+        const btnNext = document.getElementById('btn-next');
+        const progressText = document.getElementById('progress-text');
+
+        function loadQuestion(index) {
+            const currentItem = gameData[index];
+            
+            // Reset UI
+            resultSection.style.display = 'none';
+            btnNext.style.display = 'none';
+            controlsDiv.style.display = 'flex';
+            
+            resultSection.className = 'result-container'; // clear color classes
+
+            statementText.textContent = `"${currentItem.statement}"`;
+            
+            // Re-trigger animation
+            statementText.style.animation = 'none';
+            statementText.offsetHeight; 
+            statementText.style.animation = null; 
+
+            progressText.textContent = `Question ${index + 1} of ${gameData.length}`;
+        }
+
+        function checkAnswer(userGuess) {
+            const currentItem = gameData[currentIndex];
+            const isCorrect = userGuess === currentItem.answer;
+
+            controlsDiv.style.display = 'none';
+            resultSection.style.display = 'block';
+            btnNext.style.display = 'block';
+
+            if (isCorrect) {
+                score++;
+                resultSection.classList.add('bg-correct');
+                resultTitle.classList.add('text-correct');
+                resultTitle.classList.remove('text-wrong');
+                resultTitle.textContent = "Correct! It's a " + currentItem.answer.toUpperCase() + ".";
+            } else {
+                resultSection.classList.add('bg-wrong');
+                resultTitle.classList.add('text-wrong');
+                resultTitle.classList.remove('text-correct');
+                resultTitle.textContent = "Wrong! It's actually a " + currentItem.answer.toUpperCase() + ".";
+            }
+
+            resultExplanation.textContent = currentItem.explanation;
+        }
+
+        function nextQuestion() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                loadQuestion(currentIndex);
+            } else {
+                // End of Game
+                document.querySelector('.game-container').innerHTML = `
+                    <h1 style="font-size: 2.5rem; color: var(--accent);">System Override</h1>
+                    <p class="subtitle" style="margin-top: 20px; font-size: 1.2rem; color: var(--text-main);">
+                        You scored ${score} out of ${gameData.length}
+                    </p>
+                    <p style="font-weight: 600; color: var(--text-muted); margin-bottom: 30px;">
+                        ${score >= 5 ? "Impressive. You can spot the matrix." : "Careful out there. The deepfakes got you."}
+                    </p>
+                    <button class="btn-choice btn-fact" style="width: 100%; margin-bottom: 20px;" onclick="location.reload()">Reboot Game</button>
+                    <a href="index.html" class="back-link">← Back to Arcade</a>
+                `;
+            }
+        }
+
+        // Initialize first question
+        window.onload = () => {
+            loadQuestion(currentIndex);
+        };
+    </script>
+</body>
+</html>
