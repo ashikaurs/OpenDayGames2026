@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Am I?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Daylight Theme with Purple Accent */
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #6d28d9; /* Deep Purple */
+            --accent-hover: #5b21b6;
+            --clue-bg: #f8fafc;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1);
+            color: var(--text-main);
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border-top: 6px solid var(--accent);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .clue-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 250px; /* Keeps the box height stable */
+        }
+
+        .clue-box {
+            display: none; /* Hidden by default */
+            background: var(--clue-bg);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            font-weight: 600;
+            animation: slideIn 0.4s ease-out forwards;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .clue-number {
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(109, 40, 217, 0.2);
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(109, 40, 217, 0.3);
+        }
+
+        .result-box {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            padding: 25px;
+            background: #f3f4f6;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            animation: fadeIn 0.4s ease-out;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-answer {
+            font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .btn-next {
+            display: none;
+            background-color: var(--text-main);
+        }
+
+        .btn-next:hover {
+            background-color: #1e293b;
+        }
+
+        .progress {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover { color: var(--accent); }
+
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateX(-20px); } 
+            to { opacity: 1; transform: translateX(0); } 
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.95); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Who Am I?</h1>
+        <div class="subtitle">Three Clues Edition</div>
+
+        <div class="clue-container" id="clue-container">
+            </div>
+
+        <div class="controls" id="controls">
+            <button class="btn-action" id="btn-main" onclick="handleButtonClick()">Next Clue</button>
+        </div>
+
+        <div class="result-box" id="result-box">
+            <div class="result-title">The Answer Is:</div>
+            <div class="result-answer" id="result-answer"></div>
+        </div>
+
+        <button class="btn-action btn-next" id="btn-next" onclick="nextQuestion()">Next Question ➔</button>
+
+        <div class="progress" id="progress-text"></div>
+    </div>
+    
+    <a href="index.html" class="back-link">← Return to Arcade</a>
+
+    <script>
+        const questions = [
+            {
+                clues: [
+                    "It was the last country in the world to introduce television — only in 1999.",
+                    "This tiny Himalayan kingdom has more trees than people — and it's the world's only carbon negative country.",
+                    "This country measures its success not by GDP but by something else entirely."
+                ],
+                answer: "Bhutan"
+            },
+            {
+                clues: [
+                    "This country was the only source of diamonds in the world until 1896.",
+                    "This country values the electoral system and the right to vote so much that it has set up a voting booth for a single voter who lives in an isolated forest in a shrine.",
+                    "This country has never invaded any country in the last 1,00,000 years of history."
+                ],
+                answer: "India"
+            },
+            {
+                clues: [
+                    "The first director of National Institutes of Advanced Studies.",
+                    "He was one of the survivors of the Air India Flight 403 that crashed in 1982.",
+                    "He is a renowned physicist who played a major role in 'Operation Smiling Buddha'."
+                ],
+                answer: "Dr. Raja Ramanna"
+            },
+            {
+                clues: [
+                    "This South Asian country was never colonised by any foreign power.",
+                    "This country became a secular democratic republic only in 2015.",
+                    "This country's youth once voted for their Prime Minister on a Discord server."
+                ],
+                answer: "Nepal"
+            },
+            {
+                clues: [
+                    "An Arab traveller of his time listed this Kannada king as one of only four great kings in the entire world — alongside the kings of China, Baghdad and Byzantium.",
+                    "He ruled for 64 years — one of the longest reigns in Indian history.",
+                    "He is credited with the earliest extant work of Kannada literature, although some scholars attribute it to his court poet."
+                ],
+                answer: "Nripatunga Amoghavarsha 1"
+            },
+            {
+                clues: [
+                    "This country didn't give women the right to vote until 1971.",
+                    "It is illegal here to own just one guinea pig — because they get lonely.",
+                    "It has been officially neutral in every world war and conflict for over 200 years."
+                ],
+                answer: "Switzerland"
+            },
+            {
+                clues: [
+                    "This 12th century queen of Karnataka was a genius at mathematics, dance and music.",
+                    "Every stunning dancing sculpture you see at Belur and Halebidu temple was carved in her likeness.",
+                    "A king fell so deeply in love watching her dance — he married her best friend too, just so she would say yes (folk narrative)."
+                ],
+                answer: "Shanthala Devi"
+            },
+            {
+                clues: [
+                    "This country had no functioning central government for over 20 years.",
+                    "It has one of the highest rates of entrepreneurship in the world — born purely out of survival.",
+                    "This country's pirates once hijacked a ship so large — it took the world's navies months to respond."
+                ],
+                answer: "Somalia"
+            },
+            {
+                clues: [
+                    "A country's government officially appointed this cartoon as their cultural ambassador to the entire world — the first time any cartoon has received a government title.",
+                    "There exists a real town where the fictional neighbourhood from this show has been physically rebuilt — complete with the iconic empty plot and the concrete pipes where kids used to play.",
+                    "This show has been running for over 50 years, and has over 4500 gadgets used across episodes."
+                ],
+                answer: "Doraemon"
+            },
+            {
+                clues: [
+                    "A royal kingdom near this city built the longest power transmission line in the world in 1902 — stretching 147 kilometres — just to power the deepest gold mines on earth.",
+                    "This same kingdom built Asia's very first hydroelectric power station — by harnessing a waterfall on the Cauvery river — and used that electricity to make a nearby city the first in all of India to have electric lights.",
+                    "That nearby city — the one that got electricity first in India — is also the city that lights up 97,000 bulbs on one single building every single Sunday evening."
+                ],
+                answer: "Mysuru"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let currentClueIndex = 0;
+
+        const clueContainer = document.getElementById('clue-container');
+        const btnMain = document.getElementById('btn-main');
+        const resultBox = document.getElementById('result-box');
+        const resultAnswer = document.getElementById('result-answer');
+        const btnNext = document.getElementById('btn-next');
+        const progressText = document.getElementById('progress-text');
+
+        function loadQuestion(index) {
+            currentClueIndex = 0;
+            const currentQuestion = questions[index];
+            
+            // Reset UI
+            resultBox.style.display = 'none';
+            btnNext.style.display = 'none';
+            btnMain.style.display = 'block';
+            btnMain.textContent = "Show Clue 2";
+            
+            // Clear previous clues
+            clueContainer.innerHTML = '';
+
+            // Generate the 3 clue boxes dynamically
+            currentQuestion.clues.forEach((clueText, i) => {
+                const div = document.createElement('div');
+                div.className = 'clue-box';
+                div.id = `clue-box-${i}`;
+                div.innerHTML = `<span class="clue-number">Clue 0${i + 1}</span>${clueText}`;
+                clueContainer.appendChild(div);
+            });
+
+            // Show first clue immediately
+            document.getElementById('clue-box-0').style.display = 'block';
+
+            progressText.textContent = `Question ${index + 1} of ${questions.length}`;
+        }
+
+        function handleButtonClick() {
+            currentClueIndex++;
+            
+            if (currentClueIndex === 1) {
+                // Show 2nd Clue
+                document.getElementById('clue-box-1').style.display = 'block';
+                btnMain.textContent = "Show Final Clue";
+            } else if (currentClueIndex === 2) {
+                // Show 3rd Clue
+                document.getElementById('clue-box-2').style.display = 'block';
+                btnMain.textContent = "Reveal Answer";
+            } else if (currentClueIndex >= 3) {
+                // Show Answer
+                btnMain.style.display = 'none';
+                resultBox.style.display = 'block';
+                btnNext.style.display = 'block';
+                resultAnswer.textContent = questions[currentQuestionIndex].answer;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            } else {
+                document.querySelector('.game-container').innerHTML = `
+                    <h1 style="font-size: 2.2rem; margin-bottom: 20px; color: var(--accent);">Game Complete</h1>
+                    <div style="text-align: center; font-size: 1.1rem; color: var(--text-main); margin-bottom: 30px; font-weight: 600;">
+                        You have unlocked all the identities. Outstanding logic!
+                    </div>
+                    <button class="btn-action" style="display: block;" onclick="location.reload()">Play Again</button>
+                    <a href="index.html" class="back-link">← Return to Arcade</a>
+                `;
+            }
+        }
+
+        // Initialize first question on load
+        window.onload = () => {
+            loadQuestion(currentQuestionIndex);
+        };
+    </script>
+</body>
+</html>
